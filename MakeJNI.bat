@@ -1,0 +1,1 @@
+"C:\Program Files\Java\jdk1.7.0_79\bin\javah" -o "C:\Users\admin\Documents\NetBeansProjects\RGB_LED\RGBLED.h" -classpath "C:\Users\admin\Documents\NetBeansProjects\MinTDriver_RGB_LED_java\build\classes;D:\MinTBuild\dist\MinT.jar" "MinTFramework.ExternalDevice.Control.RGBLED.MinTDriver_RGB_LED_java"
