@@ -41,6 +41,14 @@ JNIEXPORT void JNICALL Java_MinTFramework_ExternalDevice_Control_RGBLED_MinTDriv
 
 /*
  * Class:     MinTFramework_ExternalDevice_Control_RGBLED_MinTDriver_RGB_LED_java
+ * Method:    set_pwmRGB
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_MinTFramework_ExternalDevice_Control_RGBLED_MinTDriver_1RGB_1LED_1java_set_1pwmRGB
+  (JNIEnv *, jobject, jint, jint, jint);
+
+/*
+ * Class:     MinTFramework_ExternalDevice_Control_RGBLED_MinTDriver_RGB_LED_java
  * Method:    color_PWM
  * Signature: (IIDDD)V
  */

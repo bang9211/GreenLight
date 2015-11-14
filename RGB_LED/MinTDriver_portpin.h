@@ -236,8 +236,6 @@ char readI2C(int i2cNumber, char address) {
 
 void setPWM(int portNum, int pinNum){
     char systemCommand[50] = "echo bone_pwm";
-    char overlayPath[40] = " > /sys/devices/bone_capemgr.9/slots";
-    char p[2] = "P";
     char underBar[2] = "_";
     char port[4];
     char pin[5];
@@ -245,12 +243,14 @@ void setPWM(int portNum, int pinNum){
     sprintf(pin, "%d", portNum);
     sprintf(port, "%d", pinNum);
     
-    strcat(p,port);
-    strcat(systemCommand, port);
     strcat(systemCommand, underBar);
+	strcat(systemCommand, "P");
     strcat(systemCommand, pin);
-    strcat(systemCommand, overlayPath);
-    
+    strcat(systemCommand, underBar);
+    strcat(systemCommand, port);
+	strcat(systemCommand, " > ");
+    strcat(systemCommand, BONEPATH);
+   	printf("system call : %s\n",systemCommand); 
     system(systemCommand);
 }
 
