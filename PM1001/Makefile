@@ -1,4 +1,4 @@
-SName = PM1001
+SName = pm1001_driver
 SensorC = $(SName).c
 SensorO = $(SName).o
 SensorLib = lib$(SName).so

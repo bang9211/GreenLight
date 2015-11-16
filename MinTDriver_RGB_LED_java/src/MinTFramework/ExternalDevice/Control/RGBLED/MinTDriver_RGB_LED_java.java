@@ -36,7 +36,6 @@ public class MinTDriver_RGB_LED_java extends Device {
         long delay_high;
 
         public void set_low_high(long low, long high) {
-            System.out.println("SET LOW HIGH");
             delay_low = low;
             delay_high = high;
         }
@@ -54,7 +53,6 @@ public class MinTDriver_RGB_LED_java extends Device {
 
         @Override
         public void run() {
-            System.out.println("RED CONTROLLER");
             while (true) {
                 gpio_pin_low(portNumber_red, pinNumber_red);
                 USleep(red.delay_low);
@@ -68,7 +66,6 @@ public class MinTDriver_RGB_LED_java extends Device {
 
         @Override
         public void run() {
-            System.out.println("GREEN CONTROLLER");
             while (true) {
                 gpio_pin_low(portNumber_green, pinNumber_green);
                 USleep(green.delay_low);
@@ -82,7 +79,6 @@ public class MinTDriver_RGB_LED_java extends Device {
 
         @Override
         public void run() {
-            System.out.println("BLUE CONTROLLER");
             while (true) {
                 gpio_pin_low(portNumber_blue, pinNumber_blue);
                 USleep(blue.delay_low);
@@ -164,20 +160,20 @@ public class MinTDriver_RGB_LED_java extends Device {
     }
 
     public void coloring_PWM(double red, double green, double blue) {
-        System.out.println("coloring PWM");
+//        System.out.println("coloring PWM");
         color_PWM(number_red, number_green, red, green, blue);
     }
 
     public void coloring_RGB_PWM(int red, int green, int blue) {
-        System.out.println("coloring RGB PWM");
-        /*double duty_red, duty_green, duty_blue;
-
-        duty_red = 100.0 - (double) (red + 1) * 99.0 / 256.0;
-        duty_green = 100.0 - (double) (green + 1) * 99.0 / 256.0;
-        duty_blue = 100.0 - (double) (blue + 1) * 99.0 / 256.0;
-        
-        coloring_PWM(duty_red,duty_green,duty_blue);*/
-        
+//        System.out.println("coloring RGB PWM");
+//        double duty_red, duty_green, duty_blue;
+//
+//        duty_red = 100.0 - (double) (red + 1) * 99.0 / 256.0;
+//        duty_green = 100.0 - (double) (green + 1) * 99.0 / 256.0;
+//        duty_blue = 100.0 - (double) (blue + 1) * 99.0 / 256.0;
+//        
+//        coloring_PWM(duty_red,duty_green,duty_blue);
+//        
         color_RGB_PWM(number_red,number_green, red, green, blue);
     }
 

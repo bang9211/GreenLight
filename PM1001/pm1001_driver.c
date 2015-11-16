@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "/MinT/usr/BBBio/BBBiolib.h"
-#include "portpin.h"
+#include "MinTDriver_portpin.h"
 #include "pm1001.h"
 
 int uartNum = 0;
