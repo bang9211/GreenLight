@@ -6,6 +6,14 @@
 #define HZ 500.0f
 #define disable 100.0f
 
+double PWM0A = disable;
+double PWM0B = disable;
+double PWM1A = disable;
+double PWM1B = disable;
+double PWM2A = disable;
+double PWM2B = disable;
+
+
 void initRGB_LED_PWM(int portNum_red, int pinNum_red,
         int portNum_green, int pinNum_green,
         int portNum_blue, int pinNum_blue){
@@ -37,9 +45,39 @@ void delay_ms(int ms){
     iolib_delay_ms(ms);
 }
 
+void set_BBBIO_PWM(int number, double duty_A, double duty_B){
+    BBBIO_PWMSS_Setting(number,HZ,duty_A,duty_B);
+    BBBIO_ehrPWM_Enable(number);
+}
+
+void setPWMrgb(int number, int _valA, int _valB){
+    int valA = _valA == -1 ? disable : _valA;
+    int valB = _valB == -1 ? disable : _valB;
+    
+    printf("Set PWM RGB : number(%d) - valA(%d), -valB(%d)\n",number, valA, valB);
+    
+	switch(number){
+		case 0 :
+			PWM0A = _valA == -1 ? PWM0A : 100.0 - (float)(_valA+1)*99.0/256.0;
+			PWM0B = _valB == -1 ? PWM0B : 100.0 - (float)(_valB+1)*99.0/256.0;
+			set_BBBIO_PWM(number, PWM0A, PWM0B);
+			break;
+		case 1 :
+			PWM1A = _valA == -1 ? PWM1A : 100.0 - (float)(_valA+1)*99.0/256.0;
+			PWM1B = _valB == -1 ? PWM1B : 100.0 - (float)(_valB+1)*99.0/256.0;
+			set_BBBIO_PWM(number, PWM1A, PWM1B);
+			break;
+		case 2 :
+			PWM2A = _valA == -1 ? PWM2A : 100.0 - (float)(_valA+1)*99.0/256.0;
+			PWM2B = _valB == -1 ? PWM2B : 100.0 - (float)(_valB+1)*99.0/256.0;
+			set_BBBIO_PWM(number, PWM2A, PWM2B);
+			break;
+	}
+}
+
 void coloring_PWM(int number_red, int number_green, double red, double green, double blue){
     BBBIO_PWMSS_Setting(number_red,HZ,blue,red);
-    BBBIO_PWMSS_Setting(number_green,HZ, disable, green);
+    BBBIO_PWMSS_Setting(number_green,HZ, green, disable);
     
     BBBIO_ehrPWM_Enable(number_red);
     BBBIO_ehrPWM_Enable(number_green);
@@ -103,6 +141,16 @@ JNIEXPORT void JNICALL Java_MinTFramework_ExternalDevice_Control_RGBLED_MinTDriv
 JNIEXPORT void JNICALL Java_MinTFramework_ExternalDevice_Control_RGBLED_MinTDriver_1RGB_1LED_1java_delay
   (JNIEnv *env, jobject obj, jint delay){
     delay_ms(delay);
+}
+
+/*
+ * Class:     MinTFramework_ExternalDevice_Control_RGBLED_MinTDriver_RGB_LED_java
+ * Method:    set_pwmRGB
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_MinTFramework_ExternalDevice_Control_RGBLED_MinTDriver_1RGB_1LED_1java_set_1pwmRGB
+  (JNIEnv *env, jobject obj, jint number, jint valA, jint valB){
+    setPWMrgb(number, valA, valB);
 }
 
 /*

@@ -6,6 +6,7 @@
 package MinTFramework.ExternalDevice.Control.RGBLED;
 
 import MinTFramework.ExternalDevice.Device;
+import java.util.ArrayList;
 
 /**
  *
@@ -27,6 +28,11 @@ public class MinTDriver_RGB_LED_java extends Device {
     private int portNumber_blue;
     private int pinNumber_blue;
     private int number_blue;
+    
+    /**
+     * for PWM
+     */
+    PWMManager pwmRGB = null;
 
     private String method;
 
@@ -100,6 +106,8 @@ public class MinTDriver_RGB_LED_java extends Device {
 
     private native void delay(int ms);
 
+    private native void set_pwmRGB(int number, int valA, int valB);
+            
     private native void color_PWM(int number_red, int number_green, double red, double green, double blue);
 
     private native void color_RGB_PWM(int number_red, int number_green, int red, int green, int blue);
@@ -122,6 +130,19 @@ public class MinTDriver_RGB_LED_java extends Device {
         uSleep(delay);
     }
 
+    /**
+     * @deprecated 
+     * @param portNum_red
+     * @param pinNum_red
+     * @param num_red
+     * @param portNum_green
+     * @param pinNum_green
+     * @param num_green
+     * @param portNum_blue
+     * @param pinNum_blue
+     * @param num_blue
+     * @param m 
+     */
     public MinTDriver_RGB_LED_java(int portNum_red, int pinNum_red, int num_red,
             int portNum_green, int pinNum_green, int num_green,
             int portNum_blue, int pinNum_blue, int num_blue, String m) {
@@ -136,6 +157,43 @@ public class MinTDriver_RGB_LED_java extends Device {
         pinNumber_blue = pinNum_blue;
         number_blue = num_blue;
         method = m;
+        
+        //for PWM
+        if(method.equals("PWM")){
+            pwmRGB = new PWMManager(PWMPIN.getPWM(portNum_red, pinNum_red),
+                                    PWMPIN.getPWM(portNum_green, pinNum_green),
+                                    PWMPIN.getPWM(portNum_blue, pinNum_blue));
+        }
+    }
+    
+    /**
+     * Updated PWM progress
+     * @param portNum_red
+     * @param pinNum_red
+     * @param portNum_green
+     * @param pinNum_green
+     * @param portNum_blue
+     * @param pinNum_blue
+     * @param m 
+     */
+    public MinTDriver_RGB_LED_java(int portNum_red, int pinNum_red,
+            int portNum_green, int pinNum_green,
+            int portNum_blue, int pinNum_blue, String m) {
+        super("RGBLED");
+        portNumber_red = portNum_red;
+        pinNumber_red = pinNum_red;
+        portNumber_green = portNum_green;
+        pinNumber_green = pinNum_green;
+        portNumber_blue = portNum_blue;
+        pinNumber_blue = pinNum_blue;
+        method = m;
+        
+        //for PWM
+        if(method.equals("PWM")){
+            pwmRGB = new PWMManager(PWMPIN.getPWM(portNum_red, pinNum_red),
+                                    PWMPIN.getPWM(portNum_green, pinNum_green),
+                                    PWMPIN.getPWM(portNum_blue, pinNum_blue));
+        }
     }
 
     @Override
@@ -159,11 +217,38 @@ public class MinTDriver_RGB_LED_java extends Device {
         delay(ms);
     }
 
+    public void setPWM_RGB(int red, int green, int blue){
+        if(pwmRGB == null || !pwmRGB.isloaded())
+            return;
+        
+        pwmRGB.setRGB(red, green, blue);
+        
+        for(int num : pwmRGB.getEnablePWM_Number()){
+            PWMPIN pinA= pwmRGB.getPWMPIN(num, 'A');
+            PWMPIN pinB= pwmRGB.getPWMPIN(num, 'B');
+            int valA = pinA != null ? pinA.getRGBvalue() : -1;
+            int valB = pinB != null ? pinB.getRGBvalue() : -1;
+            
+            set_pwmRGB(num,valA,valB);
+        }
+    }
+    /**
+     * @deprecated 
+     * @param red
+     * @param green
+     * @param blue 
+     */
     public void coloring_PWM(double red, double green, double blue) {
 //        System.out.println("coloring PWM");
         color_PWM(number_red, number_green, red, green, blue);
     }
 
+    /**
+     * @deprecated 
+     * @param red
+     * @param green
+     * @param blue 
+     */
     public void coloring_RGB_PWM(int red, int green, int blue) {
 //        System.out.println("coloring RGB PWM");
 //        double duty_red, duty_green, duty_blue;

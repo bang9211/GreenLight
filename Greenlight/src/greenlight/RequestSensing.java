@@ -39,6 +39,7 @@ public class RequestSensing extends Request{
     
     
     public RequestSensing(MinT frame){
+        super(frame);
         pm1001 = frame.getDevice("PM1001");
         cm1101 = frame.getDevice("CM1101");
         RGB_LED1 = frame.getDevice("RGB_LED1");
@@ -130,19 +131,25 @@ public class RequestSensing extends Request{
         }
          return weather_code;
     }
+    
+    public void free(){
+        ((MinTDriver_pm1001_java)pm1001).freeDevice();
+        ((MinTDriver_cm1101_java)cm1101).freeDevice();
+        ((MinTDriver_RGB_LED_java)RGB_LED1).freeDevice();
+        ((MinTDriver_RGB_LED_java)RGB_LED2).freeDevice();
+        ((MinTDriver_ht01sv)ht01sv).freeDevice();
+        ((MinTDriver_RGB_LED_java)RGB_LED3).freeDevice();
+        ((MinTDriver_RGB_LED_java)RGB_LED4).freeDevice();
+        ((MinTDriver_RGB_LED_java)RGB_LED5).freeDevice();
+    }
+    
     @Override
     public void execute() {
         float dustValue = 0;
         float CO2 = 0;
         double discomfortIndex = 0;
         int weather_code = 0;
-        
-        float later_dustValue = 0;
-        float later_CO2 = 0;
-        double later_discomfortIndex = 0;
-        int later_weather_code = 0;
         int outdoorDust = 0;
-        
         
         ((MinTDriver_RGB_LED_java)RGB_LED2).start_GPIO();
         ((MinTDriver_RGB_LED_java)RGB_LED3).start_GPIO();
@@ -150,12 +157,8 @@ public class RequestSensing extends Request{
         ((MinTDriver_RGB_LED_java)RGB_LED5).start_GPIO();
         
         while(!Thread.currentThread().isInterrupted()){
-            later_dustValue = dustValue;
-            later_CO2 = CO2;
-            later_discomfortIndex = discomfortIndex;
-            later_weather_code = weather_code;
             try {
-            outdoorDust = getOutdoorDust("http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?sidoName=강원&numOfRows=10&pageNo=1&ServiceKey=CSCtClt84KbBaEcSoOGWjgEENDe%2FrvcW5Qcu2tw9F6UkFr16rP2vkoRxnxB3KP4NnG7r%2F2ho%2BY4N3OTqvyhArA%3D%3D");
+                outdoorDust = getOutdoorDust("http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?sidoName=강원&numOfRows=10&pageNo=1&ServiceKey=CSCtClt84KbBaEcSoOGWjgEENDe%2FrvcW5Qcu2tw9F6UkFr16rP2vkoRxnxB3KP4NnG7r%2F2ho%2BY4N3OTqvyhArA%3D%3D");
             } catch (IOException ex) {
                 Logger.getLogger(RequestSensing.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -163,16 +166,14 @@ public class RequestSensing extends Request{
             CO2 = ((MinTDriver_cm1101_java) cm1101).getCO2();
             discomfortIndex = getDiscomfortIndex();
             weather_code = getWeather();
-            //weather_code = 10;
             
             System.out.println("discomfortIndex : "+discomfortIndex);
             System.out.println("dustValue : "+dustValue);
             System.out.println("CO2 : "+CO2);
             System.out.println("Weather Code : " + weather_code);
             System.out.println("Outdoor DustValue : " + outdoorDust);
-           
-          
-            //System.out.println("Dust Enter");
+            
+            
             if(dustValue <= 30)
                 ((MinTDriver_RGB_LED_java)RGB_LED1).coloring_RGB_PWM(0, 100, 255);
             else if(30<dustValue && dustValue <= 80)
@@ -183,20 +184,18 @@ public class RequestSensing extends Request{
                 ((MinTDriver_RGB_LED_java)RGB_LED1).coloring_RGB_PWM(255,128,0);
             else if(200<dustValue)
                 ((MinTDriver_RGB_LED_java)RGB_LED1).coloring_RGB_PWM(255, 0, 0);
- 
             
             
-            //System.out.println("OutdoorDust Enter");
             if(outdoorDust <= 30)
-                ((MinTDriver_RGB_LED_java)RGB_LED5).coloring_RGB_PWM(0, 100, 255);
+                ((MinTDriver_RGB_LED_java)RGB_LED5).setColor_RGB_GPIO(0, 100, 255);
             else if(30<outdoorDust && outdoorDust <= 80)
-                ((MinTDriver_RGB_LED_java)RGB_LED5).coloring_RGB_PWM(0, 255, 0);
-            else if(80<outdoorDust && outdoorDust<=120)
-                ((MinTDriver_RGB_LED_java)RGB_LED5).coloring_RGB_PWM(255, 255, 0);
+                ((MinTDriver_RGB_LED_java)RGB_LED5).setColor_RGB_GPIO(0, 255, 0);
+             else if(80<outdoorDust && outdoorDust<=120)
+                ((MinTDriver_RGB_LED_java)RGB_LED5).setColor_RGB_GPIO(255, 255, 0);
             else if(120<outdoorDust && outdoorDust<=200)
-                ((MinTDriver_RGB_LED_java)RGB_LED5).coloring_RGB_PWM(255,128,0);
+                ((MinTDriver_RGB_LED_java)RGB_LED5).setColor_RGB_GPIO(255,128,0);
             else if(200<outdoorDust)
-                ((MinTDriver_RGB_LED_java)RGB_LED5).coloring_RGB_PWM(255, 0, 0);
+                ((MinTDriver_RGB_LED_java)RGB_LED5).setColor_RGB_GPIO(255, 0, 0);
             
           
             if(250<CO2 && CO2<=350)
@@ -229,39 +228,16 @@ public class RequestSensing extends Request{
                 ((MinTDriver_RGB_LED_java)RGB_LED4).setColor_RGB_GPIO(0, 255, 255);
             else if(31==weather_code || weather_code==32)
                 ((MinTDriver_RGB_LED_java)RGB_LED4).setColor_RGB_GPIO(0, 255, 0);
-                
-           ((MinTDriver_RGB_LED_java)RGB_LED1).delay_ms(900);
-           ((MinTDriver_RGB_LED_java)RGB_LED1).delay_ms(900);
-           ((MinTDriver_RGB_LED_java)RGB_LED1).delay_ms(900);
-            
-            ((MinTDriver_RGB_LED_java)RGB_LED4).delay_ms(900);
-            ((MinTDriver_RGB_LED_java)RGB_LED4).delay_ms(900);
-            ((MinTDriver_RGB_LED_java)RGB_LED4).delay_ms(900);
-            
-            ((MinTDriver_RGB_LED_java)RGB_LED2).delay_ms(900);
-            ((MinTDriver_RGB_LED_java)RGB_LED2).delay_ms(900);
-            ((MinTDriver_RGB_LED_java)RGB_LED2).delay_ms(900);
-            
-            ((MinTDriver_RGB_LED_java)RGB_LED3).delay_ms(900);
-            ((MinTDriver_RGB_LED_java)RGB_LED3).delay_ms(900);
-            ((MinTDriver_RGB_LED_java)RGB_LED3).delay_ms(900);
             
             try {
-                Thread.currentThread().sleep(500);
+                Thread.currentThread().sleep(1000*60*30);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("Interrupt Occcured");
             }
         }
         
-        ((MinTDriver_pm1001_java)pm1001).freeDevice();
-        ((MinTDriver_cm1101_java)cm1101).freeDevice();
-        ((MinTDriver_RGB_LED_java)RGB_LED1).freeDevice();
-        ((MinTDriver_RGB_LED_java)RGB_LED2).freeDevice();
-        ((MinTDriver_ht01sv)ht01sv).freeDevice();
-        ((MinTDriver_RGB_LED_java)RGB_LED3).freeDevice();
-        ((MinTDriver_RGB_LED_java)RGB_LED4).freeDevice();
-        ((MinTDriver_RGB_LED_java)RGB_LED5).freeDevice();
+        
     }
     
 }
